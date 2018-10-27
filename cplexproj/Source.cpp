@@ -9,7 +9,7 @@ ILOSTLBEGIN
 #include <iostream>
 
 	
-const unsigned int ILOSC_KLOCKOW = 12;
+const unsigned int ILOSC_KLOCKOW = 4;
 
 const int wymiarX = 8, wymiarY = 8;
 
@@ -75,18 +75,61 @@ void rysowanieWPliku(const IloCP &cplex, const vector<Klocek> & wszystkieKlocki)
   char znaki[] ={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','0','1','2','3','4','5','6','7','8','9'};
 
   memset(tablica,'.', wymiarX*wymiarY);
+
+  fstream MatlabFile;
+  MatlabFile.open("Matlab.txt",'w');
+   
+  
+  if(MatlabFile.good())
+  {
+	  MatlabFile<<"plot(";
+  
+  }
   for(int i = 0; i<ILOSC_KLOCKOW; i++)
   {
-    for(int x=0;x<wymiarX;x++)
-    {
-      for(int y=0;y<wymiarY;y++)
+
+	  int x1=wymiarX;
+	  int x2=0;
+	  int y1=wymiarY;
+	  int y2=0;
+	  bool klocekWystepuje=false;
+	  for(int x=0;x<wymiarX;x++)
+	  {
+		  for(int y=0;y<wymiarY;y++)
       {
         if(cplex.getValue(wszystkieKlocki[i].tablica[x][y])==1)
         {
+			klocekWystepuje=true;
           tablica[x][y]= znaki[i];
+		  if(x1>x)
+		  {
+			  x1=x;
+		  }
+		  if(y1>y)
+		  {
+			  y1=y;
+		  }
+		  if(x2<x+1)
+		  {
+			  x2=x+1;
+		  }
+		  if(y2<y+1)
+		  {
+			  y2=y+1;
+		  }
+
         }
       }
     }
+	if(MatlabFile.good()&&klocekWystepuje)
+	{
+
+		//	'k-',[0 6 6 0 0],[0 0 6 6 0],'k-',[6 12 12 0 0],[0 0 6 6 0],'k-',[12 18 18 12 12],[0 0 6 6 0],'k-'
+		MatlabFile<<"["<<x1<<" "<<x2<<" "<<x2
+			<<" "<<x1<<" "<<x1<<"],["<<y1<<" "<<y1
+			<<" "<<y2
+			<<" "<<y2<<" "<<y1<<"],'k-',";
+	}
   }
 
   fstream outputFile;
